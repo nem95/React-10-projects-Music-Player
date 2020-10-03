@@ -169,7 +169,7 @@ const Player = (props) => {
       {tracks && currentTrack && (
         <div className={styles.image__container} >
           {prevTrack && prevTrack.length > 0 && (
-            <img src={prevTrack[0].album.images[0].url} alt="" className={styles.prev__track}/>
+            <img src={prevTrack[prevTrack.length - 1].album.images[0].url} alt="" className={styles.prev__track}/>
           )}
 
           <img src={currentTrack.album.images[0].url} alt="" className={styles.current__track}/>
