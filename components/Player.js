@@ -1,28 +1,21 @@
 import { useEffect, useState } from 'react';
-import styles from './style/Player.module.css'
+
+import useSpotify from '../hooks/useSpotify';
+
+import styles from './style/Player.module.css';
 
 const Player = (props) => {
-  const { tracks } = props;
-  const [playerReady, setPlayerReady] = useState(false);
+  const { tracks, token } = props;
+  const { player, deviceId} = useSpotify(token);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [nextTrack, setNextTrack] = useState(null);
   const [prevTrack, setPrevTrack] = useState(null);
-  const [deviceId, setDeviceId] = useState(null);
+  const [soundLevel, setSoundLevel] = useState(null);
 
   const toggleAction = async (action) => {
     if (window.Spotify) {
-      const token = props.token;
-
-      const player = new Spotify.Player({
-        name: 'Web Playback SDK Quick Start Player',
-        getOAuthToken: cb => {
-
-          cb(token);
-        },
-        volume: 0.5,
-      });
-
       const play = ({
         spotify_uri,
         playerInstance: {
@@ -41,7 +34,7 @@ const Player = (props) => {
             }),
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${props.token}`
+              'Authorization': `Bearer ${token}`
             },
           });
         });
@@ -98,6 +91,7 @@ const Player = (props) => {
 
           setIsPlaying(true);
         }
+
         player.addListener('player_state_changed', state => {
           const { paused, track_window } = state;
 
@@ -119,48 +113,16 @@ const Player = (props) => {
     }
   }
 
-  useEffect(() => {
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      const token = props.token;
-      const player = new Spotify.Player({
-        name: 'Web Playback SDK Quick Start Player',
-        getOAuthToken: cb => { cb(token); }
-      });
+  const toggleSoundLevelChange = async (e) => {
+    console.log(e.target.value);
+    setSoundLevel(e.target.value);
 
-      // Error handling
-      player.addListener('initialization_error', ({ message }) => { console.error(message); });
-      player.addListener('authentication_error', ({ message }) => { console.error(message); });
-      player.addListener('account_error', ({ message }) => { console.error(message); });
-      player.addListener('playback_error', ({ message }) => { console.error(message); });
+    await player.setVolume(e.target.value / 100);
+  };
 
-      // Playback status updates
-      player.addListener('player_state_changed', state => { console.log(state); });
-
-      // Ready
-      player.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id);
-        setDeviceId(device_id)
-      });
-
-      // Not Ready
-      player.addListener('not_ready', ({ device_id }) => {
-        console.log('Device ID has gone offline', device_id);
-      });
-
-      // Connect to the player!
-      player.connect().then(success => {
-        if (success) {
-          console.log('The Web Playback SDK successfully connected to Spotify!');
-        }
-
-        setPlayerReady(true)
-      });
-    };
-
-    if (!playerReady) {
-      window.onSpotifyWebPlaybackSDKReady();
-    }
-  })
+  if (currentTrack) {
+    console.log(currentTrack);
+  }
 
   return (
     <div>
@@ -201,6 +163,13 @@ const Player = (props) => {
         <button onClick={() => toggleAction('next')}>Next song</button>
       )}
 
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value={soundLevel ? soundLevel : '50'}
+        onChange={(e) => toggleSoundLevelChange(e)}
+      />
     </div>
   )
 };
