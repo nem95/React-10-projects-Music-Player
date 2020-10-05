@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import useSpotify from '../hooks/useSpotify';
 
 import styles from './style/Player.module.css';
+import PlayIcon from '../assets/img/play.svg';
+import PauseIcon from '../assets/img/play.svg';
+import NextPrevIcon from '../assets/img/next_prev.svg';
 
 const Player = (props) => {
   const { tracks, token, refreshToken } = props;
@@ -131,13 +134,23 @@ const Player = (props) => {
       {tracks && currentTrack && (
         <div className={styles.image__container} >
           {prevTrack && prevTrack.length > 0 && (
-            <img src={prevTrack[prevTrack.length - 1].album.images[0].url} alt="" className={styles.prev__track}/>
+            <div className={styles.prev__track}>
+              <img src={prevTrack[prevTrack.length - 1].album.images[0].url} alt="" />
+            </div>
           )}
 
-          <img src={currentTrack.album.images[0].url} alt="" className={styles.current__track}/>
+          <div className={styles.current__track}>
+            <img src={currentTrack.album.images[0].url} alt="" />
+
+            <button onClick={() => toggleAction('resume')}>
+              <img src={PlayIcon} />
+            </button>
+          </div>
 
           {nextTrack && nextTrack.length > 0 && (
-            <img src={nextTrack[0].album.images[0].url} alt="" className={styles.next__track}/>
+            <div  className={styles.next__track}>
+              <img src={nextTrack[0].album.images[0].url} alt=""/>
+            </div>
           )}
         </div>
       )}
