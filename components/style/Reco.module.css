@@ -1,0 +1,22 @@
+.reco__container {
+  width: 100%;
+  height: auto;
+}
+
+.reco__container h1 {
+  color: #FFF;
+}
+
+.reco__list__wrapper {
+  display: flex;
+}
+
+.reco__list__item {
+  width: 25%;
+  margin: 15px;
+}
+
+.reco__item__img {
+  width: 100%;
+  height: auto;
+}

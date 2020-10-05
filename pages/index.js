@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import styles from '../styles/Home.module.css';
 
 import Player from '../components/Player';
+import Reco from '../components/Reco';
 
 export default function Home() {
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [user, setUser] = useState(null);
   const [tracks, setTracks] = useState(null);
+  const [recommendations, setRecommendations] = useState(null);
 
   const authUrl = 'http://localhost:8888/login';
 
@@ -36,6 +38,27 @@ export default function Home() {
       }
     }
 
+    const getReco = async () => {
+      const option = {
+        method: 'get',
+        headers: new Headers({
+          'Authorization': `Bearer ${token}`,
+        }),
+      }
+
+      try {
+        const data = await fetch('https://api.spotify.com/v1/browse/featured-playlists?limit=4', option);
+        const { playlists: {
+          items
+        }} = await data.json();
+
+        console.log(items);
+        setRecommendations(items);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     if (!token) {
       const hash = window.location.hash
         .substring(1)
@@ -58,6 +81,10 @@ export default function Home() {
         fetchUser()
       }
     }
+
+    if (token && !recommendations) {
+      getReco();
+    }
   })
 
   return (
@@ -69,6 +96,10 @@ export default function Home() {
         >
           Login to Spotify
         </a>
+      )}
+
+      {recommendations && token && (
+        <Reco token={token} refreshToken={refreshToken} recommendations={recommendations} />
       )}
 
       {tracks && token && (
