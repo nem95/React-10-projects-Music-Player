@@ -5,8 +5,8 @@ import useSpotify from '../hooks/useSpotify';
 import styles from './style/Player.module.css';
 
 const Player = (props) => {
-  const { tracks, token } = props;
-  const { player, deviceId} = useSpotify(token);
+  const { tracks, token, refreshToken } = props;
+  const { player, deviceId} = useSpotify(token, refreshToken);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);

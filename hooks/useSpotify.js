@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function useSpotify(token) {
+function useSpotify(token, refreshToken) {
   const [spotifyPlayer, setSpotifyPlayer] = useState(null);
 
   const [playerReady, setPlayerReady] = useState(false);

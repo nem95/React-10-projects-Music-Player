@@ -5,21 +5,11 @@ import Player from '../components/Player';
 
 export default function Home() {
   const [token, setToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
   const [user, setUser] = useState(null);
   const [tracks, setTracks] = useState(null);
 
-  const authUrl = 'https://accounts.spotify.com/authorize?';
-  const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
-  const redirectUri = "http://localhost:3000";
-  const scopes = [
-    "user-read-currently-playing",
-    "user-read-playback-state",
-    "streaming",
-    "user-read-email",
-    "user-read-private",
-    "user-library-read",
-    "user-modify-playback-state"
-  ];
+  const authUrl = 'http://localhost:8888/login';
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,6 +50,7 @@ export default function Home() {
 
       if (hash.access_token) {
         setToken(hash.access_token);
+        setRefreshToken(hash.access_token);
       }
       console.log(hash);
     } else {
@@ -74,14 +65,14 @@ export default function Home() {
       {!token && (
         <a
           className={styles.connect__btn}
-          href={`${authUrl}client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`}
+          href={authUrl}
         >
           Login to Spotify
         </a>
       )}
 
       {tracks && token && (
-        <Player token={token} tracks={tracks}/>
+        <Player token={token} refreshToken={refreshToken} tracks={tracks}/>
       )}
     </div>
   )
