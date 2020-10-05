@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import useSpotify from '../hooks/useSpotify';
 
 import styles from './style/Player.module.css';
 import PlayIcon from '../assets/img/play.svg';
-import PauseIcon from '../assets/img/play.svg';
+import PauseIcon from '../assets/img/pause.svg';
 import NextPrevIcon from '../assets/img/next_prev.svg';
 
 const Player = (props) => {
@@ -68,17 +68,17 @@ const Player = (props) => {
         }
 
         if (action === 'pause') {
-          const data = await fetch('https://api.spotify.com/v1/me/player/pause', option);
+          await player.pause();
           console.log('Paused!');
 
           setIsPlaying(false);
         }
 
         if (action === 'resume') {
-          await fetch('https://api.spotify.com/v1/me/player/play', option);
+          await player.resume();
           console.log('resumed !');
 
-          setIsPlaying(true);
+          setIsPlaying(!isPlaying);
         }
 
         if (action === 'next') {
@@ -136,20 +136,34 @@ const Player = (props) => {
           {prevTrack && prevTrack.length > 0 && (
             <div className={styles.prev__track}>
               <img src={prevTrack[prevTrack.length - 1].album.images[0].url} alt="" />
+
+              <button onClick={() => toggleAction('prev')} className={styles.prev__button}>
+                <img src={NextPrevIcon} className={styles.prev__icon}/>
+              </button>
             </div>
           )}
 
           <div className={styles.current__track}>
             <img src={currentTrack.album.images[0].url} alt="" />
 
-            <button onClick={() => toggleAction('resume')}>
-              <img src={PlayIcon} />
-            </button>
+              {isPlaying ? (
+                <button onClick={() => toggleAction('pause')} className={styles.play__pause__button}>
+                  <img src={PauseIcon} className={styles.play__pause__icon}/>
+                </button>
+              ) : (
+                <button onClick={() => toggleAction('resume')} className={styles.play__pause__button}>
+                  <img src={PlayIcon} className={styles.play__pause__icon}/>
+                </button>
+              )}
           </div>
 
           {nextTrack && nextTrack.length > 0 && (
             <div  className={styles.next__track}>
               <img src={nextTrack[0].album.images[0].url} alt=""/>
+
+              <button onClick={() => toggleAction('next')} className={styles.next__button}>
+                <img src={NextPrevIcon} className={styles.next__icon}/>
+              </button>
             </div>
           )}
         </div>
@@ -166,14 +180,6 @@ const Player = (props) => {
         <div>
           <button onClick={() => toggleAction('pause')}>Pause song</button>
         </div>
-      )}
-
-      {prevTrack && prevTrack.length > 0 && (
-        <button onClick={() => toggleAction('prev')}>Previous song</button>
-      )}
-
-      {nextTrack && nextTrack.length > 0 && (
-        <button onClick={() => toggleAction('next')}>Next song</button>
       )}
 
       <input
